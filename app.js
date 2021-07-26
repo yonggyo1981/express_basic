@@ -1,55 +1,37 @@
 const express = require('express');
-const app = express(); // app 객체 
+const app = express(); // express 객체가 생성 
 
 
-/*
-	use - 미들웨어 
-	- 가장 상단에 위치하는 use 로 등록한 미들웨어
-	- 모든 요청에 유입이되는 라우터
-	- 공통 라우터
-*/
-app.use((req, res, next) => {
-	// URL 명시 하지 않으면 공통 미들웨어
-	console.log("use로 등록한 미들웨어");
-	
-	next(); // 다음 미들웨어로 이동 
-});
-
-// GET 방식 / URL 
+// GET - / 라우터 
 app.get("/", (req, res) => {
 	/**
-	res.status(상태코드번호)   - res.writeHead ... 
-	res.send('출력할 데이터'); - res.write, res.end
+	req - Request 
+	res - Response 
+		 .send(데이터) - 출력(http모듈 제공 기본 메서드 예) res.write, res.end)
+		 .status(상태코드) - (http 모듈 - res.writeHead(상태코드))
 	*/
 	
-	return res.status(200).send("<h1>Express에서 출력</h1>");
+	return res.send("<h1>Express에서 출력!</h1>");
 });
 
-// 미들웨어 
+
+
 app.get("/test", (req, res, next) => {
+	//return res.send("<h1>테스트 라우터</h1>");
 	console.log("0번째 미들웨어");
-	next();
+	next(); // 다음 해당하는 라우터의 첫번째 미들웨어로 이동 
 });
 
-// 미들웨어 - 총 3개의 미들웨어
-app.get("/test", (req, res, next) => {
+app.get("/test", (req, res, next) /* 1번째 미들웨어 */ => {
 	console.log("1번째 미들웨어");
-	next(); // 다음 미들웨어로 이동 
-}, (req, res, next) => { 
+	next(); // 다음 미들웨어로 이동
+}, (req, res, next) /* 2번째 미들웨어 */  => {
 	console.log("2번째 미들웨어");
 	next();
-}, (req, res) => {
+}, (req, res) /* 3번째 미들웨어 */ => {
 	console.log("3번째 미들웨어");
 	
 	return res.send("");
-});
-
-/**
-* use 로 등록된 미들웨어  - 가장 하단에 있다면?
-*  
-*/
-app.use((req, res, next) => {
-	return res.send("가장 하단에 있는 라우터 - 없는 페이지 처리 라우터");
 });
 
 app.listen(3000, () => {
